@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BuzatechCell Manutenção de Celulares - Vandré Buzanello</title>
+    <link rel="shortcut icon" href="./app-settings.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital@0;1&family=Nunito&family=Outfit:wght@400;700&family=Space+Grotesk:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <style>
+      /* Adicione estilos CSS aqui, se necessário */
+      body {
+        font-family: "Montserrat", "Helvetica", sans-serif;
+        font-weight: bold;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        background-image: url(./celular-quebrado.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      header {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 1em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header img {
+        max-height: 150px; /* Ajuste a altura conforme necessário */
+      }
+
+      nav ul {
+        list-style: none;
+        display: flex;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav li {
+        margin-right: 20px;
+      }
+
+      /* Estilo para links dentro de listas */
+      li a {
+        color: #007bff; /* Cor azul */
+        text-decoration: none; /* Remover sublinhado */
+        transition: color 0.3s; /* Efeito de transição ao passar o mouse */
+        display: block; /* Faz com que os links ocupem toda a largura do li */
+        padding: 8px 0; /* Espaçamento interno */
+      }
+
+      li a:hover {
+        color: #0056b3; /* Altera a cor ao passar o mouse */
+      }
+
+      section {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        opacity: 0.75;
+      }
+
+      footer {
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        padding: 1em;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+
+      .btn-whatsapp {
+        z-index: 9;
+        position: fixed;
+        right: 15px;
+        bottom: 15px;
+        width: 75px;
+        height: 75px;
+        cursor: pointer;
+        border-radius: 100%;
+      }
+
+      .btn-whatsapp a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        background-image: url("./btn-whatsapp.png");
+        background-position: center center;
+        background-repeat: no-repeat;
+        text-indent: -9999px; /* Oculta o texto do link */
+      }
+
+      .tooltip-text {
+        visibility: visible;
+        width: 160px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        top: 50%;
+        left: -180px; /* Ajuste a posição do tooltip */
+        margin-top: -25px;
+        opacity: 1;
+        transition: opacity 0.3s;
+      }
+
+      .tooltip-text::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: -10px;
+        margin-top: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent transparent black;
+      }
+
+      .animated {
+        -webkit-animation-duration: 1s;
+        animation-duration: 1s;
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+      }
+
+      .delay {
+        -moz-animation-delay: 0.8s;
+        -webkit-animation-delay: 0.8s;
+        animation-delay: 0.8s;
+      }
+
+      @-webkit-keyframes tada {
+        0% {
+          -webkit-transform: scale3d(1, 1, 1);
+          transform: scale3d(1, 1, 1);
+        }
+        10%,
+        20% {
+          -webkit-transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+          transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+        }
+        30%,
+        50%,
+        70%,
+        90% {
+          -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+          transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+        }
+        40%,
+        60%,
+        80% {
+          -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+          transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+        }
+        100% {
+          -webkit-transform: scale3d(1, 1, 1);
+          transform: scale3d(1, 1, 1);
+        }
+      }
+
+      @keyframes tada {
+        0% {
+          -webkit-transform: scale3d(1, 1, 1);
+          transform: scale3d(1, 1, 1);
+        }
+        10%,
+        20% {
+          -webkit-transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+          transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+        }
+        30%,
+        50%,
+        70%,
+        90% {
+          -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+          transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+        }
+        40%,
+        60%,
+        80% {
+          -webkit-transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+          transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+        }
+        100% {
+          -webkit-transform: scale3d(1, 1, 1);
+          transform: scale3d(1, 1, 1);
+        }
+      }
+
+      .tada {
+        -webkit-animation-name: tada;
+        animation-name: tada;
+      }
+
+      /* Estilo CSS para o parágrafo de chamada à ação */
+      .paragrafo-chamada {
+        font-size: 16px;
+        line-height: 1.6;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      .paragrafo-chamada strong {
+        color: #007bff; /* Cor para destacar palavras-chave */
+      }
+
+      .paragrafo-chamada a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .paragrafo-chamada a:hover {
+        text-decoration: underline;
+      }
+
+      /* Outros estilos, se necessário */
+    </style>
+  </head>
+  <body>
+    <header>
+      <img src="./BuzatechCell_logo.png" alt="VBCell_logo" />
+      <h1>BuzaTechCell Manutenção de Celulares - Vandré Buzanello</h1>
+      <nav>
+        <ul>
+          <li><a href="./index.html">Início</a></li>
+          <li><a href="./servicos.html">Serviços</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section>
+      <p class="paragrafo-chamada">
+        Bem-vindo à BuzatechCell - a sua solução confiável para todas as necessidades
+        de manutenção de celulares! Nosso compromisso é proporcionar a você uma
+        experiência excepcional, combinando expertise técnica com atendimento
+        personalizado. Se o seu smartphone precisa de uma troca de tela,
+        substituição de bateria ou qualquer outro reparo, estamos aqui para
+        ajudar. Nossa equipe altamente qualificada está pronta para resolver os
+        desafios do seu dispositivo, devolvendo a funcionalidade e a vida à sua
+        tecnologia. Na VBCell, valorizamos a transparência, a eficiência e a
+        satisfação do cliente. Garantimos um serviço rápido e de qualidade,
+        utilizando peças genuínas e as últimas técnicas de reparo. Queremos que
+        você volte a utilizar seu celular sem preocupações. Conte conosco para
+        superar suas expectativas. Entre em contato hoje mesmo para agendar um
+        serviço ou para esclarecer qualquer dúvida. Sua satisfação é nossa
+        prioridade!
+      </p>
+
+      <div id="mapa" style="height: 400px"></div>
+      <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+      <script src="geolocalizacao.js"></script>
+    </section>
+    <footer>
+      <p>Endereço: Rua José Pioli, 273 - Jardim Alvorada - Cravinhos - SP</p>
+      <p>&copy; 2023 BuzatechCell Manutenção de Celulares - Vandré Buzanello</p>
+    </footer>
+
+    <!-- Botão do WhatsApp com tooltip -->
+    <div class="btn-whatsapp">
+      <a
+        href="https://api.whatsapp.com/send?phone=5516996336465"
+        title="Fale Conosco"
+      ></a>
+      <div class="tooltip-text">Fale Conosco pelo WhatsApp</div>
+    </div>
+  </body>
+</html>
